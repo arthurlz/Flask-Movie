@@ -24,6 +24,8 @@ class User(db.Model):
     addtime = db.Column(db.DateTime, index=True, default=datetime.utcnow)  # sign in time
     uuid = db.Column(db.String(255), unique=True)  # unique key
     userlogs = db.relationship('Userlog', backref='user')  # foreign key user log
+    comments = db.relationship('Comment', backref='user')  # foreign key comment
+    moviecols = db.relationship('Moviecol', backref='user')  # foreign key movie collection
 
     def __repr__(self):
         return "<User %r>" % self.name
@@ -68,6 +70,8 @@ class Movie(db.Model):
     release_time = db.Column(db.Date)  # release time
     length = db.Column(db.String(100))  # play time
     addtime = db.Column(db.DateTime, index=True, default=datetime.utcnow)  # add time
+    comments = db.relationship("Comment", backref="movie")  # comment foreign key
+    moviecols = db.relationship("Moviecol", backref="movie")  # movie collection foreign key
 
     def __repr__(self):
         return "<Movie %r>" % self.title
@@ -83,3 +87,27 @@ class Preview(db.Model):
 
     def __repr__(self):
         return "<Preview %r>" % self.title
+
+
+# comments
+class Comment(db.Model):
+    __tablename__ = "comment"
+    id = db.Column(db.Integer, primary_key=True)  # id
+    content = db.Column(db.Text)  # comment content
+    movie_id = db.Column(db.Integer, db.ForeignKey('movie.id')) # which movie
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id')) # which user
+    addtime = db.Column(db.DateTime, index=True, default=datetime.utcnow)  # add time
+
+    def __repr__(self):
+        return "<Comment %r>" % self.title
+
+# movie collection
+class Moviecol(db.Model):
+    __tablename__ = "moviecol"
+    id = db.Column(db.Integer, primary_key=True)  # id
+    movie_id = db.Column(db.Integer, db.ForeignKey('movie.id'))  # which movie
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))  # which user
+    addtime = db.Column(db.DateTime, index=True, default=datetime.utcnow)  # add time
+
+    def __repr__(self):
+        return "<Moviecol %r>" % self.id
